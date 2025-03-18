@@ -65,10 +65,20 @@
                 body: JSON.stringify({
                     name: userName
                 })
-            }).then(response => response.text())
-              .then(data => alert("출석 완료!"))
-              .catch(error => alert("출석 체크 실패!"));
-        });
+            }).then(response => response.json()) // 응답을 JSON으로 변환
+                .then(data => {
+                    console.log("서버 응답:", data);
+                    if (data.status === "success") {
+                        alert("✅ " + data.message); // 출석 성공 메시지
+                    } else {
+                        alert("❌ " + data.message); // 출석 실패 메시지
+                    }
+                })
+                .catch(error => {
+                    console.error("출석 체크 실패!", error);
+                    alert("출석 체크 중 오류 발생!");
+                });
+            });
 
         getLocation();
     </script>
