@@ -65,20 +65,24 @@
                 body: JSON.stringify({
                     name: userName
                 })
-            }).then(response => response.json()) // 응답을 JSON으로 변환
-                .then(data => {
-                    console.log("서버 응답:", data);
-                    if (data.status === "success") {
-                        alert("✅ " + data.message); // 출석 성공 메시지
-                    } else {
-                        alert("❌ " + data.message); // 출석 실패 메시지
+            }).then(response => response.text()) // JSON이 아니더라도 응답을 먼저 텍스트로 변환
+                .then(text => {
+                    try {
+                        let data = JSON.parse(text); // JSON으로 변환 시도
+                        if (data.status === "success") {
+                            alert("✅ " + data.message);
+                        } else {
+                            alert("❌ " + data.message);
+                        }
+                    } catch (error) {
+                        console.error("JSON 파싱 오류! 서버에서 HTML을 반환했을 가능성이 있습니다.", text);
+                        alert("서버 오류: JSON 형식이 아님!\n\n" + text);
                     }
                 })
                 .catch(error => {
                     console.error("출석 체크 실패!", error);
                     alert("출석 체크 중 오류 발생!");
                 });
-            });
 
         getLocation();
     </script>
