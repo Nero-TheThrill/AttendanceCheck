@@ -60,7 +60,7 @@
             let ip = await getIP();
             let userName = prompt("이름을 입력하세요");
 
-            fetch("https://script.google.com/macros/s/AKfycbwnvm6bJDWgZ0nSiX5baynBcNxBA-nn3BPlhpWHvniRQKM-r4YoFS0SPYnIFvxzj0CYnQ/exec", {
+            fetch("https://script.google.com/macros/s/AKfycby9ozx1zlwext1GnkBpg3lMA2batn34wblXoe4ZL7_l8fEp6fnUbv2bf2geuPpW2ulLBA/exec", {
                 method: "POST",
                 mode: "cors",
                 headers: { "Content-Type": "application/json" },
@@ -68,7 +68,7 @@
                     name: userName,
                     ip: ip
                 })
-            }).then(response => response.text())
+            }).then(response => response.json())
               .then(data => console.log("출석 완료!", data))
               .catch(error => console.error("출석 체크 실패!", error));
         });
