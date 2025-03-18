@@ -13,7 +13,7 @@
     <script>
         const targetLat = 35.1666176;  // 위도
         const targetLng = 129.1190272; // 경도
-        const allowedRadius = 1000; // 반경 300m
+        const allowedRadius = 1000; // 반경 1km
 
         function getLocation() {
             if (navigator.geolocation) {
@@ -50,17 +50,10 @@
             document.getElementById("status").innerText = "위치 정보를 가져오는 데 실패했습니다.";
         }
 
-        async function getIP() {
-            let response = await fetch('https://api64.ipify.org?format=json');
-            let data = await response.json();
-            return data.ip;
-        }
-
         document.getElementById("check-in-btn").addEventListener("click", async function() {
-            let ip_ = await getIP();
             let userName = prompt("이름을 입력하세요");
 
-            let GAS_URL = "https://script.google.com/macros/s/AKfycbw1OlK_hxr1fYATURxrOY3a3B-o7GoEYqgZs5yXL_v-11x987Nex44_cysMkUroGm2NLw/exec";
+            let GAS_URL = "https://script.google.com/macros/s/AKfycbyO1E9eIy-fo1UbYMos7capAShXNnU8v4zqqSIW_fmOG_veGjKznA0e_n0_OpW4NfigzQ/exec";
 
             let PROXY_URL = "https://cors-anywhere.herokuapp.com/";
 
@@ -70,12 +63,11 @@
                 headers: { "Content-Type": "application/json",
                            "X-Requested-With": "XMLHttpRequest" },
                 body: JSON.stringify({
-                    name: userName,
-                    ip: ip_
+                    name: userName
                 })
             }).then(response => response.text())
-              .then(data => console.log("출석 완료!", data))
-              .catch(error => console.error("출석 체크 실패!", error));
+              .then(data => alert("출석 완료!"))
+              .catch(error => alert("출석 체크 실패!"));
         });
 
         getLocation();
