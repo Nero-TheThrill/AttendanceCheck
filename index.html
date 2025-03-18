@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>위치 기반 출석 체크</title>
+</head>
+<body>
+    <h1>위치 기반 출석 체크</h1>
+    <p id="status">위치 확인 중...</p>
+    <button id="check-in-btn" disabled>출석 체크</button>
+
+    <script>
+        const targetLat = 35.1666176;  // 위도
+        const targetLng = 129.1190272; // 경도
+        const allowedRadius = 300; // 반경 300m
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(checkProximity, showError);
+            } else {
+                document.getElementById("status").innerText = "이 브라우저는 위치 서비스를 지원하지 않습니다.";
+            }
+        }
+
+        function checkProximity(position) {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+            const distance = calculateDistance(targetLat, targetLng, userLat, userLng);
+
+            if (distance <= allowedRadius) {
+                document.getElementById("status").innerText = "출석 가능 지역 내에 있습니다.";
+                document.getElementById("check-in-btn").disabled = false;
+            } else {
+                document.getElementById("status").innerText = userLat+" "+userLng+"출석 가능 지역 밖입니다.";
+            }
+        }
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371000;
+            const dLat = (lat2 - lat1) * (Math.PI / 180);
+            const dLon = (lon2 - lon1) * (Math.PI / 180);
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        function showError() {
+            document.getElementById("status").innerText = "위치 정보를 가져오는 데 실패했습니다.";
+        }
+
+        async function getIP() {
+            let response = await fetch('https://api64.ipify.org?format=json');
+            let data = await response.json();
+            return data.ip;
+        }
+
+        document.getElementById("check-in-btn").addEventListener("click", async function() {
+            let ip = await getIP();
+            let userName = prompt("이름을 입력하세요");
+
+            fetch("https://script.google.com/macros/s/AKfycbyTyFX25Un2mjFvOb55SLdzGEitg7w-V69FmPstTL5oVW9UV3qVuxEGvskIcchsoH9-aQ/exec", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: userName,
+                    ip: ip
+                })
+            }).then(response => response.text())
+              .then(data => alert("출석 완료!"))
+              .catch(error => alert("출석 체크 실패!"));
+        });
+
+        getLocation();
+    </script>
+</body>
+</html>
