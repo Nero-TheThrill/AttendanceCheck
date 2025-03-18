@@ -55,34 +55,28 @@
             let data = await response.json();
             return data.ip;
         }
-        document.getElementById("check-in-btn").addEventListener("click", async function () {
-        let ip_ = await getIP();
-        let userName = prompt("이름을 입력하세요");
 
-        let GAS_URL = "https://script.google.com/macros/s/AKfycbw1OlK_hxr1fYATURxrOY3a3B-o7GoEYqgZs5yXL_v-11x987Nex44_cysMkUroGm2NLw/exec";
+        document.getElementById("check-in-btn").addEventListener("click", async function() {
+            let ip_ = await getIP();
+            let userName = prompt("이름을 입력하세요");
 
-        fetch(GAS_URL, {
-            method: "POST",
-            mode: "cors",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Requested-With": "XMLHttpRequest"
-            },
-            body: JSON.stringify({
-                name: userName,
-                ip: ip_
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("출석 완료!", data);
-            document.getElementById("status").innerText = data.message;
-        })
-        .catch(error => {
-            console.error("출석 체크 실패!", error);
-            document.getElementById("status").innerText = "출석 체크 중 오류 발생!";
+            let GAS_URL = "https://script.google.com/macros/s/AKfycbw1OlK_hxr1fYATURxrOY3a3B-o7GoEYqgZs5yXL_v-11x987Nex44_cysMkUroGm2NLw/exec";
+
+            let PROXY_URL = "https://api.allorigins.win/raw?url=";
+
+            fetch(PROXY_URL + GAS_URL,  {
+                method: "POST",
+                mode: "cors",
+                headers: { "Content-Type": "application/json",
+                           "X-Requested-With": "XMLHttpRequest" },
+                body: JSON.stringify({
+                    name: userName,
+                    ip: ip_
+                })
+            }).then(response => response.text())
+              .then(data => console.log("출석 완료!", data))
+              .catch(error => console.error("출석 체크 실패!", error));
         });
-    });
 
         getLocation();
     </script>
