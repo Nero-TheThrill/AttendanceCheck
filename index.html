@@ -65,7 +65,7 @@
                 body: JSON.stringify({
                     name: userName
                 })
-            }).then(response => response.json()) // 응답을 JSON으로 변환
+            }).then(response => response.text()) // 응답을 JSON으로 변환
                 .then(data => {
                     console.log("서버 응답:", data);
                     if (data.status === "success") {
