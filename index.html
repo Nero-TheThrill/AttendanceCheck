@@ -65,8 +65,9 @@
                 body: JSON.stringify({
                     name: userName
                 })
-            }).then(response => response.text()) // JSON이 아니더라도 응답을 먼저 텍스트로 변환
-                .then(text => {
+            })
+            .then(response => response.text()) // JSON이 아니더라도 응답을 먼저 텍스트로 변환
+            .then(text => {
                     try {
                         let data = JSON.parse(text); // JSON으로 변환 시도
                         if (data.status === "success") {
@@ -83,6 +84,7 @@
                     console.error("출석 체크 실패!", error);
                     alert("출석 체크 중 오류 발생!");
                 });
+            });
 
         getLocation();
     </script>
