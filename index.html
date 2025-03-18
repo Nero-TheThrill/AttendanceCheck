@@ -62,14 +62,15 @@
 
             fetch("https://script.google.com/macros/s/AKfycbyZQMxDwooHIufCYpYqPzEBcXICpUhHJPCt_tvBc3D7ET2kJ8zE3Sf4scNss3LHSSH_UQ/exec", {
                 method: "POST",
+                mode: "cors",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     name: userName,
                     ip: ip
                 })
             }).then(response => response.text())
-              .then(data => alert("출석 완료!"))
-              .catch(error => alert("출석 체크 실패!"));
+              .then(data => console.log("출석 완료!", data))
+              .catch(error => console.error("출석 체크 실패!", error));
         });
 
         getLocation();
