@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>위치 기반 출석 체크</title>
+    <title>Digipen Academy in Busan Attendance Check</title>
 </head>
 <body>
-    <h1>위치 기반 출석 체크</h1>
-    <p id="status">위치 확인 중...</p>
-    <button id="check-in-btn" disabled>출석 체크</button>
+    <h1>Location based attendance check</h1>
+    <p id="status">Confirming Location...</p>
+    <button id="check-in-btn" disabled>I'm here</button>
 
     <script>
         const targetLat = 35.1666176;  // 위도
@@ -19,7 +19,7 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(checkProximity, showError);
             } else {
-                document.getElementById("status").innerText = "이 브라우저는 위치 서비스를 지원하지 않습니다.";
+                document.getElementById("status").innerText = "This browser doesn't support location-based service";
             }
         }
 
@@ -29,10 +29,10 @@
             const distance = calculateDistance(targetLat, targetLng, userLat, userLng);
 
             if (distance <= allowedRadius) {
-                document.getElementById("status").innerText = "출석 가능 지역 내에 있습니다.";
+                document.getElementById("status").innerText = "You are within the check-in area.";
                 document.getElementById("check-in-btn").disabled = false;
             } else {
-                document.getElementById("status").innerText = userLat+" "+userLng+"출석 가능 지역 밖입니다.";
+                document.getElementById("status").innerText = userLat+" "+userLng+"You are outside the check-in area.";
             }
         }
         function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -47,13 +47,13 @@
         }
 
         function showError() {
-            document.getElementById("status").innerText = "위치 정보를 가져오는 데 실패했습니다.";
+            document.getElementById("status").innerText = "Failed to retrieve location information.";
         }
 
         document.getElementById("check-in-btn").addEventListener("click", async function() {
-            let userName = prompt("이름을 입력하세요");
+            let userName = prompt("Type your phone number");
 
-            let GAS_URL = "https://script.google.com/macros/s/AKfycbxdaJ5xIlANJUtVm-VXy6fmkoJ8Hf9FHdvTdCwrsC0kE6n0xbGhmJDNZPhJHGoK_oxBWQ/exec";
+            let GAS_URL = "https://script.google.com/macros/s/AKfycbzMZjbAOkJt6seRD5IxAxutNtltHqsUC9CAdcr3xn3Xz8ZsMH7oEt3Oehb5XAhnjtyS6A/exec";
 
             let PROXY_URL = "https://cors-anywhere.herokuapp.com/";
 
@@ -66,23 +66,23 @@
                     name: userName
                 })
             })
-            .then(response => response.text()) // JSON이 아니더라도 응답을 먼저 텍스트로 변환
+            .then(response => response.text())
             .then(text => {
                     try {
-                        let data = JSON.parse(text); // JSON으로 변환 시도
+                        let data = JSON.parse(text);
                         if (data.status === "success") {
                             alert("✅ " + data.message);
                         } else {
                             alert("❌ " + data.message);
                         }
                     } catch (error) {
-                        console.error("JSON 파싱 오류! 서버에서 HTML을 반환했을 가능성이 있습니다.", text);
-                        alert("서버 오류: JSON 형식이 아님!\n\n" + text);
+                        console.error("JSON parsing error! server might returned HTML.", text);
+                        alert("Server error: Not a JSON form\n\n" + text);
                     }
                 })
                 .catch(error => {
-                    console.error("출석 체크 실패!", error);
-                    alert("출석 체크 중 오류 발생!");
+                    console.error("Check-in failed!", error);
+                    alert("An error occurred during check-in!");
                 });
             });
 
