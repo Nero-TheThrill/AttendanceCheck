@@ -4,16 +4,155 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digipen Academy in Busan Attendance Check</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .logo {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .divider {
+            flex-grow: 1;
+            height: 2px;
+            background: #ddd;
+        }
+
+        .title-text {
+            margin: 0 15px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* 상태 메시지를 한 칸 아래로 내리는 스타일 */
+        .status-container {
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        p, #response-message {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        #phone-number {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        #check-in-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        #check-in-btn:disabled {
+            background: gray;
+            cursor: not-allowed;
+        }
+
+        #check-in-btn:hover:not(:disabled) {
+            background: #0056b3;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+        }
+
+        .loading {
+            font-size: 16px;
+            color: #007BFF;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h1>Location based attendance check</h1>
-    <p id="status">Confirming Location...</p>
-    <button id="check-in-btn" disabled>I'm here</button>
+    <div class="container">
+        <img class="logo" src="digipenlogo.png" alt="Digipen Logo">
+
+        <div class="title-container">
+            <div class="divider"></div>
+            <h1 class="title-text">Digipen Academy in Busan Attendance Check</h1>
+            <div class="divider"></div>
+        </div>
+
+        <!-- 상태 메시지를 한 칸 아래로 이동 -->
+        <div class="status-container">
+            <p id="status">Confirming Location...</p>
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="phone-number" placeholder="Enter last 4 digits of phone number">
+        </div>
+
+        <button id="check-in-btn" disabled>I'm Here</button>
+
+        <p id="response-message"></p>
+    </div>
+
+    <div class="footer">Made by Jinwoo Choi</div>
 
     <script>
-        const targetLat = 35.1666176;  // 위도
-        const targetLng = 129.1190272; // 경도
-        const allowedRadius = 1000; // 반경 1km
+        const targetLat = 35.1666176;
+        const targetLng = 129.1190272;
+        const allowedRadius = 1000;
 
         function getLocation() {
             if (navigator.geolocation) {
@@ -29,12 +168,13 @@
             const distance = calculateDistance(targetLat, targetLng, userLat, userLng);
 
             if (distance <= allowedRadius) {
-                document.getElementById("status").innerText = "You are within the check-in area.";
+                document.getElementById("status").innerText = "✅ You are within the check-in area.";
                 document.getElementById("check-in-btn").disabled = false;
             } else {
-                document.getElementById("status").innerText = userLat+" "+userLng+"You are outside the check-in area.";
+                document.getElementById("status").innerText = `❌ You are outside the check-in area. (Lat: ${userLat}, Lng: ${userLng})`;
             }
         }
+
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371000;
             const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -47,44 +187,55 @@
         }
 
         function showError() {
-            document.getElementById("status").innerText = "Failed to retrieve location information.";
+            document.getElementById("status").innerText = "❌ Failed to retrieve location information.";
         }
 
         document.getElementById("check-in-btn").addEventListener("click", async function() {
-            let userName = prompt("Type your phone number");
+            let userName = document.getElementById("phone-number").value.trim();
+            let responseMessage = document.getElementById("response-message");
+
+            if (userName.length !== 4 || isNaN(userName)) {
+                responseMessage.innerText = "\n⚠ Please enter the last 4 digits of your phone number.";
+                responseMessage.style.color = "red";
+                return;
+            }
+
+            let checkInButton = document.getElementById("check-in-btn");
+            checkInButton.disabled = true;
+            checkInButton.innerText = "Checking in...";
+
+            responseMessage.innerHTML = "<br><span class='loading'>⏳ Processing your check-in...</span>";
 
             let GAS_URL = "https://script.google.com/macros/s/AKfycbx_pZ7ZS49XTGRpN9eg3PBhTwcTgYFJMb9aKI13V8K6Dqzju2BmK14wGAnAkn5fFDTOtA/exec";
-
             let PROXY_URL = "https://cors-anywhere.herokuapp.com/";
 
-            fetch(PROXY_URL + GAS_URL,  {
+            fetch(PROXY_URL + GAS_URL, {
                 method: "POST",
                 mode: "cors",
                 headers: { "Content-Type": "application/json",
                            "X-Requested-With": "XMLHttpRequest" },
-                body: JSON.stringify({
-                    name: userName
-                })
+                body: JSON.stringify({ name: userName })
             })
             .then(response => response.text())
             .then(text => {
-                    try {
-                        let data = JSON.parse(text);
-                        if (data.status === "success") {
-                            alert("✅ " + data.message);
-                        } else {
-                            alert("❌ " + data.message);
-                        }
-                    } catch (error) {
-                        console.error("JSON parsing error! server might returned HTML.", text);
-                        alert("Server error: Not a JSON form\n\n" + text);
-                    }
-                })
-                .catch(error => {
-                    console.error("Check-in failed!", error);
-                    alert("An error occurred during check-in!");
-                });
+                try {
+                    let data = JSON.parse(text);
+                    responseMessage.innerText = "\n"+data.message;
+                    responseMessage.style.color = data.status === "success" ? "green" : "red";
+                } catch (error) {
+                    responseMessage.innerText = "\n❌ Server error: Not a valid response.";
+                    responseMessage.style.color = "red";
+                }
+            })
+            .catch(error => {
+                responseMessage.innerText = "\n❌ An error occurred during check-in.";
+                responseMessage.style.color = "red";
+            })
+            .finally(() => {
+                checkInButton.disabled = false;
+                checkInButton.innerText = "I'm Here";
             });
+        });
 
         getLocation();
     </script>
