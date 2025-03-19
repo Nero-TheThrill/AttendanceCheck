@@ -189,6 +189,18 @@
         function showError() {
             document.getElementById("status").innerText = "❌ Failed to retrieve location information.";
         }
+        
+
+        window.onload = function() {
+            document.getElementById("phone-number").focus();
+        };
+
+        
+        document.getElementById("phone-number").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                document.getElementById("check-in-btn").click();
+            }
+        });
 
         document.getElementById("check-in-btn").addEventListener("click", async function() {
             let userName = document.getElementById("phone-number").value.trim();
