@@ -56,7 +56,6 @@
             color: #333;
         }
 
-        /* 상태 메시지를 한 칸 아래로 내리는 스타일 */
         .status-container {
             margin-top: 15px;
             margin-bottom: 10px;
@@ -133,7 +132,6 @@
             <div class="divider"></div>
         </div>
 
-        <!-- 상태 메시지를 한 칸 아래로 이동 -->
         <div class="status-container">
             <p id="status">Confirming Location...</p>
         </div>
@@ -195,7 +193,7 @@
             document.getElementById("phone-number").focus();
         };
 
-        
+
         document.getElementById("phone-number").addEventListener("keydown", function(event) {
             if (event.key === "Enter") {
                 document.getElementById("check-in-btn").click();
@@ -203,10 +201,10 @@
         });
 
         document.getElementById("check-in-btn").addEventListener("click", async function() {
-            let userName = document.getElementById("phone-number").value.trim();
+            let userPhoneNum = document.getElementById("phone-number").value.trim();
             let responseMessage = document.getElementById("response-message");
 
-            if (userName.length !== 4 || isNaN(userName)) {
+            if (userPhoneNum.length !== 4 || isNaN(userPhoneNum)) {
                 responseMessage.innerText = "\n⚠ Please enter the last 4 digits of your phone number.";
                 responseMessage.style.color = "red";
                 return;
@@ -218,7 +216,7 @@
 
             responseMessage.innerHTML = "<br><span class='loading'>⏳ Processing your check-in...</span>";
 
-            let GAS_URL = "https://script.google.com/macros/s/AKfycbx5idokSolnrz5SYyaQi3KHvLa8n2FndSrQof4iNy11UaZsBz2L9KRsJ9HKSC4-XR9ZPg/exec";
+            let GAS_URL = "https://script.google.com/macros/s/AKfycbxfMiI6xZHNOW6Vd56clOmB1D4sdWwQrymkyxKky9D5Z2-OlGbgmtuLsoQ5wC5IcMTQxg/exec";
             let PROXY_URL = "https://cors-anywhere.herokuapp.com/";
 
             fetch(PROXY_URL + GAS_URL, {
@@ -226,7 +224,7 @@
                 mode: "cors",
                 headers: { "Content-Type": "application/json",
                            "X-Requested-With": "XMLHttpRequest" },
-                body: JSON.stringify({ name: userName })
+                body: JSON.stringify({ phoneNum: userPhoneNum })
             })
             .then(response => response.text())
             .then(text => {
