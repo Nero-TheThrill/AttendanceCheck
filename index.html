@@ -230,6 +230,7 @@
             })
             .then(response => response.text())
             .then(text => {
+                console.log("📦 RAW response from GAS:", text); 
                 try {
                     let data = JSON.parse(text);
                     responseMessage.innerText = "\n"+data.message;
