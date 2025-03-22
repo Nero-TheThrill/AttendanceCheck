@@ -218,10 +218,10 @@
 
             responseMessage.innerHTML = "<br><span class='loading'>⏳ Processing your check-in...</span>";
 
-            let GAS_URL = "https://script.google.com/macros/s/AKfycbxPxtfThIBHR0dViMsQcosHxKzyJyWri2Xwvb82bUcGjA_hXbZRbactmt7Oo4VOdoIyWw/exec";
-            let PROXY_URL = "https://cors-proxy.imjinwoo98.workers.dev/?url=";
+            let GAS_URL = "https://script.google.com/macros/s/AKfycbwd_O5JOm9kAjCLzny4KL-8VaIWbOQw-Cz6yO6kCuXDkMSOAtMxJ_FWNvJb3nk9GyaY6Q/exec";
+            let PROXY_URL = "https://cors-anywhere.herokuapp.com/";
 
-            fetch(PROXY_URL + encodeURIComponent(GAS_URL), {
+            fetch(PROXY_URL + GAS_URL, {
                 method: "POST",
                 mode: "cors",
                 headers: { "Content-Type": "application/json",
@@ -230,7 +230,6 @@
             })
             .then(response => response.text())
             .then(text => {
-                console.log("📦 RAW response from GAS:", text); 
                 try {
                     let data = JSON.parse(text);
                     responseMessage.innerText = "\n"+data.message;
